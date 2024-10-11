@@ -1,0 +1,96 @@
+jenkins:
+    systemMessage: "Amazon Fargate Jenkins Server"
+    numExecutors: 0
+    remotingSecurity:
+      enabled: true
+    agentProtocols:
+        - "JNLP4-connect"
+    securityRealm:
+        local:
+            allowsSignup: false
+            users:
+                - id: ecsuser
+                  password: \$${JENKINS_ADMIN_PWD}
+    authorizationStrategy:
+        globalMatrix:
+            grantedPermissions:
+                - "Overall/Read:authenticated"
+                - "Job/Read:authenticated"
+                - "View/Read:authenticated"
+                - "Overall/Administer:authenticated"
+    crumbIssuer: "standard"
+    slaveAgentPort: 50000
+    clouds:
+        - ecs:
+              numExecutors: 1
+              allowedOverrides: "inheritFrom,label,memory,cpu,image"
+              credentialsId: ""
+              cluster: "${ecs_cluster_worker}"
+              name: "fargate-worker-cloud"
+              regionName: "${cluster_region}"
+              retentionTimeout: 10
+              jenkinsUrl: "https://${dns_record_name}"
+              templates:
+                  - cpu: "512"
+                    image: "jenkins/inbound-agent"
+                    label: "fargate-worker-cloud"
+                    assignPublicIp: false
+                    platformVersion: "${fargate_platform_version}"
+                    executionRole: "${execution_role_arn}"
+                    taskrole: "${task_role_arn}"
+                    launchType: "FARGATE"
+                    memory: 0
+                    memoryReservation: 1024
+                    networkMode: "awsvpc"
+                    privileged: false
+                    remoteFSRoot: "/home/jenkins"
+                    securityGroups: "${agent_security_groups}"
+                    sharedMemorySize: 0
+                    containerUser: root
+                    subnets: "${subnets}"
+                    templateName: "default"
+                    uniqueRemoteFSRoot: false
+                    logDriver: "awslogs"
+                    environments:
+                      - name: "JENKINS_WEB_SOCKET"
+                        value: "true"
+                    logDriverOptions:
+                      - name: "awslogs-region"
+                        value: "${cluster_region}"
+                      - name: "awslogs-group"
+                        value: "${aws_log_group}"
+                      - name: "awslogs-stream-prefix"
+                        value: "${aws_log_stream}"
+        
+security:
+  sSHD:
+    port: -1
+jobs:
+  
+  - script: >
+      pipelineJob('Simple job non critical task') {
+        definition {
+          cps {
+            script('''
+              pipeline {
+                  agent {
+                      ecs {
+                          inheritFrom 'fargate-worker-cloud'
+                      }
+                  }
+                  stages {
+                    stage('Test') {
+                        steps {
+                            script {
+                                sh "echo this was executed on a fargate worker cloud"
+                            }
+                            sh 'sleep 120'
+                            sh 'echo sleep is done'
+                        }
+                    }
+                  }
+              }'''.stripIndent())
+              sandbox()
+          }
+        }
+      }
