@@ -1,0 +1,85 @@
+jenkins:
+    systemMessage: "Amazon Fargate Jenkins Server"
+    numExecutors: 0
+    remotingSecurity:
+        enabled: true
+    agentProtocols:
+        - "JNLP4-connect"
+    securityRealm:
+        none: {}
+    authorizationStrategy:
+        unsecured: {}
+    crumbIssuer: "standard"
+    slaveAgentPort: 50000
+    myViewsTabBar: "standard"
+    primaryView:
+        all:
+            name: "all"
+    projectNamingStrategy: "standard"  
+    views:
+    - list:
+        columns:
+        - "status"
+        - "weather"
+        - "jobName"
+        - "lastSuccess"
+        - "lastFailure"
+        - "lastDuration"
+        - "buildButton"
+        description: "Production Env jobs"
+        jobNames:
+        - "TRONIX Production App Web App (LB) - TEST"
+        - "TRONIX Production App Web App2 (LB) - TEST"
+        name: "Production"
+    - list:
+        columns:
+        - "status"
+        - "weather"
+        - "jobName"
+        - "lastSuccess"
+        - "lastFailure"
+        - "lastDuration"
+        - "buildButton"
+        description: "Development Env jobs"
+        name: "Development"    
+    - list:
+        columns:
+        - "status"
+        - "weather"
+        - "jobName"
+        - "lastSuccess"
+        - "lastFailure"
+        - "lastDuration"
+        - "buildButton"
+        description: "Stage env jobs"
+        jobNames:
+        - "TRONIX Staging App Web App - TEST"
+        - "TRONIX Staging My Web App - TEST"
+        name: "Stage"
+    - all:
+        name: "all"
+    viewsTabBar: "standard" 
+    
+security:
+    SSHD:
+        port: -1
+
+unclassified:
+    location:
+        url: "https://${dns_record_name}"
+
+tool:
+    git:
+        installations:
+            - name: Default
+              home: "git"
+    msbuild:
+        installations:
+            - name: MSBuild 17
+              home: "C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\2017\\\\BuildTools\\\\MSBuild\\\\15.0\\\\Bin\\\\MSBuild.exe"
+            - name: MSBuild 2022
+              home: "C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\2022\\\\BuildTools\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe" 
+
+# Jobs Configuration
+jobs: # this requires the job-dsl plugin
+   - file: /usr/share/jenkins/ref/jobdsl/jobs.groovy
