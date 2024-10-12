@@ -48,7 +48,7 @@ Note: There are 2 folders here in this repository
 ```
 
 ## Roadmap
-- [ ] Check below content
+- [x] Check below content
 - [ ] Add Changelog
 - [ ] Add back to top links
 - [ ] Add Additional Templates w/ Examples
