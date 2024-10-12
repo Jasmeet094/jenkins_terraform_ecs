@@ -29,7 +29,7 @@ The Jenkins Configuration as Code (JCasC) approach allows you to configure Jenki
 
 
 ### How to Use
-Prerequisites
+* Prerequisites
 ```
 1. Change the values as per your requirements in jenkins.tfvars
 2. In the folder deploy_jenkins_terraform/main.tf in the end change the value for the record name.
