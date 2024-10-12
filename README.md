@@ -13,7 +13,7 @@ The configuration of Jenkins is managed by JCasC for consistency and ease of rep
 ### What’s Inside?
 The repository structure follows a modular approach in Terraform, making it reusable and scalable.
 
-```
+```sh
 - modules - this folder contains all the Child Modules for AWS Services
 - deploy_jenkins_terraform - This folder contains the Root Module for terraform and `jenkins.tfvar` file.
 ```
